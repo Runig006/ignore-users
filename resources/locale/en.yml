@@ -28,4 +28,7 @@ fof-ignore-users:
       user_label: Ignored user
       discussion_label: Started by an ignored user
 
+    settings: 
+      discussion: Ignore discussions
+
 

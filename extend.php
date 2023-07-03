@@ -19,27 +19,32 @@ use Flarum\Extend;
 use Flarum\User\Event\Saving;
 use Flarum\User\Search\UserSearcher;
 use Flarum\User\User;
-use FoF\IgnoreUsers\User\Search\Gambit\IgnoredGambit;
+use FoF\IgnoreUsers\Filters\IgnoredGambit;
+
+use Flarum\Discussion\Filter\DiscussionFilterer;
+use Flarum\Discussion\Search\DiscussionSearcher;
+use FoF\IgnoreUsers\Filters\IgnoredFilter;
+use Flarum\Extend\User as ExtendUser;
 
 return [
-    new Extend\Locales(__DIR__.'/resources/locale'),
+    new Extend\Locales(__DIR__ . '/resources/locale'),
 
     (new Extend\Frontend('admin'))
-        ->js(__DIR__.'/js/dist/admin.js'),
+        ->js(__DIR__ . '/js/dist/admin.js'),
 
     (new Extend\Frontend('forum'))
-        ->js(__DIR__.'/js/dist/forum.js')
-        ->css(__DIR__.'/resources/less/forum.less')
+        ->js(__DIR__ . '/js/dist/forum.js')
+        ->css(__DIR__ . '/resources/less/forum.less')
         ->route('/ignoredUsers', 'ignored.users.view'),
 
     (new Extend\Model(User::class))
         ->relationship('ignoredUsers', function (AbstractModel $model) {
             return $model->belongsToMany(User::class, 'ignored_user', 'user_id', 'ignored_user_id')
-            ->withPivot('ignored_at');
+                ->withPivot('ignored_at');
         })
         ->relationship('ignoredBy', function (AbstractModel $model) {
             return $model->belongsToMany(User::class, 'ignored_user', 'ignored_user_id', 'user_id')
-            ->withPivot('ignored_at');
+                ->withPivot('ignored_at');
         }),
 
     (new Extend\ApiSerializer(Serializer\CurrentUserSerializer::class))
@@ -70,8 +75,14 @@ return [
         ->listen(Saving::class, Listener\SaveIgnoredToDatabase::class),
 
     (new Extend\SimpleFlarumSearch(UserSearcher::class))
-        ->addGambit(IgnoredGambit::class),
+        ->addGambit(IgnoredFilter::class),
 
     (new Extend\ApiController(ShowForumController::class))
         ->addInclude('actor.ignoredUsers'),
+
+    (new ExtendUser())
+        ->registerPreference('ignoreDiscussion', 'boolVal', true),
+
+    (new Extend\Filter(DiscussionFilterer::class))
+        ->addFilterMutator(IgnoredFilter::class),
 ];

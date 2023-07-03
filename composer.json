@@ -1,9 +1,10 @@
 {
     "name": "fof/ignore-users",
-    "description": "Allow users to ignore other users.",
+    "description": "Allow users to ignore other users. Custom to block ignored discusions",
     "keywords": [
         "flarum"
     ],
+    "version": "2.0.0",
     "type": "flarum-extension",
     "license": "MIT",
     "require": {
@@ -42,7 +43,7 @@
             "category": "feature",
             "icon": {
                 "name": "fas fa-comment-slash",
-                "backgroundColor": "#e74c3c",
+                "backgroundColor": "#ff7700",
                 "color": "#fff"
             }
         },
